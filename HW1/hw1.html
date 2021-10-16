@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+	overflow: hidden
+}
+#heading{
+	 position:absolute;
+	 text-align:center;
+	 width:100vw;
+}		
+
+</style>
+</head>
+
+<body>
+	<div id = heading>
+		<h1></h1>
+		<a>HW1</a>
+		<br><br>
+		<button id='sub'> -10 </button>
+		<button id='start'> Start </button>
+		<button id='add'> +10 </button>
+		<button id='reset'> Reset </button>
+		<br>
+		<p id='msg'></p>
+	</div>
+<script src="https://threejs.org/build/three.min.js"></script>
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>
+
+$('#start').click(function(){
+	click = ! click;
+	if(click){
+
+	   	$('#start').text('Pause');
+	   	clockOn = true;
+		setTimeout (countDown, 0);
+		restart = false;
+	}
+	else{
+		$('#start').text('Start');
+		clockOn = false;	
+
+	}
+});
+
+$('#sub').click(function(){
+	if(restart){
+		if(counter < 10){
+			counter = 0;
+			return;
+		}
+		counter -= 10;
+		$('#msg').text (counter);
+		pointer.rotation.z +=  Math.PI*2/6;
+		
+	}
+
+});
+
+$('#add').click(function(){
+	if(restart){
+		counter += 10;
+		$('#msg').text (counter);
+		pointer.rotation.z -=  Math.PI*2/6;
+	}
+
+});
+
+$('#reset').click(function(){
+	restart = true;
+	clockOn = false;
+	counter = 60;
+	$('#msg').text (counter);
+	pointer.rotation.z = Math.PI;
+});
+
+
+var renderer, scene, camera;
+
+var click = false;
+let pointer = new THREE.Object3D();
+var clock = new THREE.Clock();
+var clockOn = false;
+var counter = 60;
+var restart = true;
+var type = 0;
+
+init();
+animate();
+
+function init () {
+	
+	renderer = new THREE.WebGLRenderer();
+	document.body.appendChild (renderer.domElement);
+	var width = window.innerWidth;
+	var height = window.innerHeight;
+	renderer.setSize (width, height);
+	
+	renderer.setClearColor (0xd4d2cf);
+	
+	scene = new THREE.Scene();
+
+	
+	camera = new THREE.PerspectiveCamera (35, width/height, 1, 100);
+
+	camera.position.z = 35;
+	camera.lookAt (new THREE.Vector3(0,0,0));
+	
+	
+	window.addEventListener('resize', onWindowResize, false);
+	///////////////////////////////////////////////////////////////
+
+	let loader = new THREE.TextureLoader()
+	loader.setCrossOrigin ("")
+	let map = loader.load ("https://i.imgur.com/tZLWWj5.png")
+	let geometry = new THREE.CircleGeometry( 8, 32 );
+	let material = new THREE.MeshBasicMaterial( {
+		color: 0xffffff,
+		map:map, 
+		transparent:true,
+		opacity:1 } );
+	let clock = new THREE.Mesh( geometry, material );
+	scene.add( clock );
+
+	let pointerGeometry = new THREE.CircleGeometry( 4.5, 32, Math.PI/2, 0.05 );
+	let pointerMaterial = new THREE.MeshBasicMaterial( {color: 0x000000 } );
+	var mesh = new THREE.Mesh( pointerGeometry, pointerMaterial );
+	mesh.position.set(0.1, -3.77, 0);
+	pointer.add(mesh);
+	pointer.position.set(-.2, 1.3, 0);
+	pointer.rotation.z = Math.PI;
+	scene.add( pointer );
+
+	let dotGeometry = new THREE.CircleGeometry( .5, 32 );
+	let dotMaterial = new THREE.MeshBasicMaterial( {color: 0x000000, transparent:true,
+		opacity:1 } );
+	let dot = new THREE.Mesh( dotGeometry, dotMaterial );
+	dot.position.set(-.2, 1.2, 0);
+	scene.add( dot );
+
+}
+
+function onWindowResize() {
+  
+  var width = window.innerWidth;
+  var height = window.innerHeight;
+  camera.aspect = width / height;
+  camera.updateProjectionMatrix();
+  renderer.setSize(width, height);
+	
+}
+
+function countDown() {
+  if (clockOn === false) {
+	return;
+  }
+  else{
+  	setTimeout (countDown, 1000);
+  	if(counter > 0){
+  		setTimeout (turnPointer, 1000);
+  	} 	
+  } 
+  $('#msg').text (counter);
+  --counter;
+  if (counter < 0){
+  	clockOn = false;
+  }
+  	
+}
+
+
+
+function animate() {
+	
+	requestAnimationFrame(animate);
+	render();
+
+}
+
+function turnPointer(){
+	pointer.rotation.z += Math.PI*2/60;
+	
+}
+
+
+function render() {
+	
+	renderer.render(scene, camera);
+	
+}
+
+</script>
+</body>
+
+</html>

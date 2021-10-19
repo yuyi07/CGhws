@@ -23,17 +23,18 @@ body {
 		<button id='start'> Start </button>
 		<button id='add'> +10 </button>
 		<button id='reset'> Reset </button>
+		<button id='changeStyle'> Style0 </button>
 		<br>
 		<p id='msg'></p>
 	</div>
 <script src="https://threejs.org/build/three.min.js"></script>
 <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 <script>
+javascript:(function(){var script=document.createElement('script');script.onload=function(){var stats=new Stats();document.body.appendChild(stats.dom);requestAnimationFrame(function loop(){stats.update();requestAnimationFrame(loop)});};script.src='https://mrdoob.github.io/stats.js/build/stats.min.js';document.head.appendChild(script);})()
 
 $('#start').click(function(){
 	click = ! click;
 	if(click){
-
 	   	$('#start').text('Pause');
 	   	clockOn = true;
 		setTimeout (countDown, 0);
@@ -55,9 +56,7 @@ $('#sub').click(function(){
 		counter -= 10;
 		$('#msg').text (counter);
 		pointer.rotation.z +=  Math.PI*2/6;
-		
 	}
-
 });
 
 $('#add').click(function(){
@@ -78,6 +77,17 @@ $('#reset').click(function(){
 });
 
 
+$('#changeStyle').click(function(){
+	style++;
+	if(style > 1){
+		style = 0;
+	}
+
+
+	$('#changeStyle').text('Style'+style);
+});
+
+
 var renderer, scene, camera;
 
 var click = false;
@@ -86,7 +96,7 @@ var clock = new THREE.Clock();
 var clockOn = false;
 var counter = 60;
 var restart = true;
-var type = 0;
+var style = 0;
 
 init();
 animate();
@@ -154,36 +164,47 @@ function onWindowResize() {
 }
 
 function countDown() {
-  if (clockOn === false) {
-	return;
-  }
-  else{
-  	setTimeout (countDown, 1000);
-  	if(counter > 0){
-  		setTimeout (turnPointer, 1000);
-  	} 	
-  } 
-  $('#msg').text (counter);
-  --counter;
-  if (counter < 0){
-  	clockOn = false;
-  }
-  	
+		
+	if (clockOn === false) {
+		return;
+	}
+	else{
+		setTimeout (countDown, 1000);
+		if(style === 0 && counter > 0){
+			setTimeout(turnPointer, 0);
+		}
+		
+	} 
+	--counter;
+	$('#msg').text (counter);
+	if(counter === -1)	
+		$('#msg').text (0);
+	if (counter < 0 ){
+		clockOn = false;
+	}
 }
-
-
 
 function animate() {
 	
 	requestAnimationFrame(animate);
 	render();
+	if(style === 1 && counter > 0 && clockOn)
+		setTimeout(turnPointer1, 0);
 
 }
 
 function turnPointer(){
-	pointer.rotation.z += Math.PI*2/60;
-	
+	pointer.rotation.z = Math.PI + Math.PI*2/60 * (60-counter);
+
 }
+
+function turnPointer1(){
+	pointer.rotation.z += Math.PI*2/3480 ;
+
+
+
+}
+
 
 
 function render() {

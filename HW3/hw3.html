@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+#heading{
+	text-align: center;
+	position:absolute;
+	width:100vw;
+}
+</style>
+</head>
+<body style='overflow:hidden'> 
+
+<div id='heading'>
+	<h3 style = "color:rgb(48, 196, 223)">hw3</h3>
+	<button id='changeView'>Change View</button>
+</div>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src="https://threejs.org/build/three.min.js"></script>
+<script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+
+<script>
+
+javascript:(function(){var script=document.createElement('script');script.onload=function(){var stats=new Stats();document.body.appendChild(stats.dom);requestAnimationFrame(function loop(){stats.update();requestAnimationFrame(loop)});};script.src='https://mrdoob.github.io/stats.js/build/stats.min.js';document.head.appendChild(script);})()
+var renderer, camera, scene;
+var changeView = false;
+var topCamera, frontCamera, sideCamera;
+
+init();
+animate();
+
+$("#changeView").click(function() {
+	changeView =! changeView;
+});
+
+function init(){
+	camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 10000);
+	camera.position.set (200,200,200);
+	///////
+	topCamera = new THREE.OrthographicCamera(window.innerWidth/-8,window.innerWidth/8, window.innerHeight/8, window.innerHeight/-8, 1, 1000 );
+	topCamera.position.y = 100;
+	topCamera.lookAt(0, 0, 0);
+	frontCamera = new THREE.OrthographicCamera(window.innerWidth/-8, window.innerWidth/8, window.innerHeight/8, window.innerHeight/-8, 1, 1000 );
+	frontCamera.position.z = 100;
+	frontCamera.lookAt(0, 0, 0);
+	sideCamera = new THREE.OrthographicCamera(window.innerWidth/-8, window.innerWidth/8, window.innerHeight/8, window.innerHeight/-8, 1, 1000 );
+	sideCamera.position.x = 100;
+	sideCamera.lookAt(0, 0, 0);
+	
+	renderer = new THREE.WebGLRenderer({antialias: true});
+	renderer.setSize(window.innerWidth, window.innerHeight);
+	renderer.setClearColor(0x888888);
+	window.addEventListener('resize', onWindowResize, false);
+	document.body.appendChild(renderer.domElement);
+	let controls = new THREE.OrbitControls(camera, renderer.domElement);
+        
+        
+	scene = new THREE.Scene();
+	var light = new THREE.PointLight( 0xffffff, 1, 1000 );
+	scene.add( light );
+    light.position.set(65, 50, 70)
+
+    buildShape();
+	
+}
+
+function animate(){
+	render();
+	requestAnimationFrame( animate );
+}
+
+function buildShape(){
+	var geometry = new THREE.BoxGeometry(15, 30, 13);
+	var material = new THREE.MeshPhongMaterial( { color: 0xFFD700, shininess: 100, specular: 0x383838});
+	var box1 = new THREE.Mesh(geometry, material);
+	box1.position.set(7.5, 15, -6.5);
+	
+	var geometry = new THREE.BoxGeometry(30, 10, 13);
+	var material = new THREE.MeshPhongMaterial( { color: 0xFFD700, shininess: 100, specular: 0x383838}) ;
+	var box2 = new THREE.Mesh(geometry, material);
+	box2.position.set(30, 5, -6.5);
+	
+
+	var box3 = box1.clone();
+	box3.position.set(52.5, 15, -6.5);
+
+
+    var box = new THREE.Group();
+    box.add(box1, box2, box3);
+    scene.add(box);
+    box.position.x = -30;
+    box.position.y = 25;
+
+    var boxx = box.clone();
+    scene.add(boxx);
+    boxx.position.z = -47;
+
+	var geometry = new THREE.BoxGeometry(60, 25, 60);
+	var material = new THREE.MeshPhongMaterial( { color: 0xFFD700, shininess: 100, specular: 0x383838}) ;
+	var box4 = new THREE.Mesh(geometry, material);
+	box4.position.set(0, 12.5, -30);
+    scene.add(box4);
+
+
+    var length = 70,width = 60;
+    var rr = 30;
+
+    var shape = new THREE.Shape(); 
+
+        // CW (CCW is also ok)
+    shape.moveTo(0, 0);
+    shape.lineTo(length-rr, 0);
+    shape.absarc(length-rr,rr,rr,Math.PI*1.5, Math.PI*2);
+    shape.lineTo(length, width-rr);
+    shape.absarc(length-rr,width-rr,rr,0, Math.PI*0.5);
+    shape.lineTo(0, width);
+    shape.lineTo(0, 0);
+
+    var holePath = new THREE.Path();
+    holePath.moveTo(length/2, width/2);
+    holePath.absarc(length/2, width/2, 11, 0, Math.PI * 2, true);
+    shape.holes.push(holePath);
+
+    var extrudeSettings = {
+        steps: 1,
+        depth: 10,
+        bevelEnabled: false,
+    };
+
+    var geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+    var material = new THREE.MeshPhongMaterial( { color: 0xFFD700, shininess: 100, specular: 0x383838}) ;
+    var mesh = new THREE.Mesh(geometry, material);
+    scene.add(mesh);
+    
+    mesh.rotation.x = -Math.PI/2;
+    mesh.rotation.z = -Math.PI/2;
+    mesh.position.x = -30;
+
+
+
+    var shape = new THREE.Shape(); 
+
+        // CW (CCW is also ok)
+    shape.moveTo(0, 0);
+    shape.lineTo(10, 10);
+    shape.lineTo(0, 10);
+    //shape.absarc(10,10,10,Math.PI*1.5, Math.PI*2);
+    shape.lineTo(10, 10);
+
+    var extrudeSettings = {
+        steps: 1,
+        depth: 2,
+        bevelEnabled: false,
+    };
+
+    var geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+    var material = new THREE.MeshPhongMaterial( { color: 0xFFD700, shininess: 100, specular: 0x383838}) ;
+    var mesh2 = new THREE.Mesh(geometry, material);
+
+    scene.add(mesh2);
+    
+    mesh2.rotation.x = -Math.PI/2;
+    mesh2.position.z = 50;
+
+    var shape3 = new THREE.Shape();
+	shape3.moveTo( 0,0 );
+	shape3.lineTo( 0, 10 );
+	shape3.lineTo( 60, 10 );
+	for(let i = 0, j = Math.PI/2;i<50;i++, j+=Math.PI/100)
+		shape3.lineTo( 70-Math.sin(j)*10, 10+Math.cos(j)*10 );
+	shape3.lineTo( 0, 0 );
+	var extrudeSetting3 = {
+		steps: 2,
+		depth: 60,
+		bevelEnabled: false
+    };
+    var mesh3 = new THREE.Mesh( new THREE.ExtrudeGeometry( shape3, extrudeSetting3 ), new THREE.MeshPhongMaterial( { color: 0xFFD700, shininess: 100, specular: 0x383838})) ;
+    mesh3.position.set  (30, 10, -60);
+    mesh3.rotation.y = -Math.PI/2;
+    scene.add(mesh3);
+
+    //
+
+    var loader = new THREE.TextureLoader();
+    loader.load(
+    "https://i.imgur.com/9vRbo7C.jpg",
+    function (texture) {
+        texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+        texture.repeat = new THREE.Vector2(3, 5);
+
+        var floorMaterial = new THREE.MeshBasicMaterial({
+            map: texture,
+            side: THREE.DoubleSide,
+        });
+
+        var floorGeometry = new THREE.PlaneGeometry(300, 300);
+
+        var floor = new THREE.Mesh(
+            floorGeometry,
+            floorMaterial
+        );
+
+        floor.position.y = -0.3;
+        floor.rotation.x = Math.PI / 2;
+        scene.add(floor);
+    }
+    );
+}
+
+
+function onWindowResize() {
+	camera.aspect = window.innerWidth / window.innerHeight;
+	camera.updateProjectionMatrix();
+	renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+function render() {
+	var ww = window.innerWidth;
+	var hh = window.innerHeight;
+  
+  var WW = window.innerWidth;
+	var HH = window.innerHeight;
+    renderer.setScissorTest( true );
+	
+	renderer.setViewport(0, 0, WW, HH);
+    renderer.setScissor(0, 0, WW, HH);
+	renderer.clear();
+
+	if(changeView){
+		renderer.setViewport (0,0, ww/2, hh/2);
+		renderer.setScissor (0,0, ww/2, hh/2);
+		renderer.render(scene, frontCamera);
+		  
+		renderer.setViewport (0,hh/2, ww/2, hh/2);
+		renderer.setScissor (0,hh/2, ww/2, hh/2);
+		renderer.render(scene, topCamera);
+		  
+		renderer.setViewport (ww/2,0, ww/2, hh/2);
+		renderer.setScissor (ww/2,0, ww/2, hh/2);
+		renderer.render(scene, sideCamera);
+
+		renderer.setViewport (ww/2,hh/2, ww/2, hh/2);
+		renderer.setScissor (ww/2,hh/2, ww/2, hh/2);
+		renderer.render(scene, camera);
+	}
+	else
+		renderer.render(scene, camera);
+	renderer.setScissorTest( false );
+}
+
+</script>
+
+</body>
+</html>

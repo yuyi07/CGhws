@@ -7,7 +7,7 @@ class Candle{
 		this.candle = new THREE.Object3D();
 		this.candle.name = Can;
 		this.body = new THREE.Mesh(new THREE.CylinderGeometry(5, 5, 20, 36), new THREE.MeshPhongMaterial({color: 'red',side: THREE.DoubleSide}));
-		this.body.position.y = 5;
+		this.body.position.y = 10;
 		this.body.name = nam;
 		this.candle.add(this.body);
 		
@@ -25,7 +25,7 @@ class Candle{
 
 		this.flameMesh = new THREE.Mesh(new THREE.PlaneGeometry(30,30), texMat);
 		this.flameMesh.name = flame;
-		this.flameMesh.position.y = 20;
+		this.flameMesh.position.y = 27;
 		this.candle.add(this.flameMesh);
 		
 		this.light = new THREE.PointLight('white', 0.5);

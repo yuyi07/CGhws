@@ -1,29 +1,30 @@
 <!DOCTYPE html>
+
 <html>
+
 <head>
 <style>
-body {
-	overflow: hidden
-}
 #info {
-  position: absolute;
-  top: 20px;
-  width: 100%;
-  padding: 10px;
-  text-align: center;
-  color: #ffff00
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    padding: 10px;
+    text-align: center;
+    color: #0e1796;
 }
+
+body {
+  overflow: hidden;
+}
+
 </style>
 </head>
-<body> 
 
-<div id="info">Homework 5-v1</div>
-<script src="https://threejs.org/build/three.min.js"></script>
-<script src="https://threejs.org/examples/js/controls/OrbitControls.js">
-</script>
-<script src="http://jyunming-chen.github.io/tutsplus/js/KeyboardState.js"></script>
-<script src="https://raw.githack.com/mrdoob/three.js/dev/examples/js/geometries/TeapotGeometry.js"></script>
-    
+<body> 
+<div id='info'>
+    <h1>homework5-1</h1> 
+</div>
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 
 <script id="myVertexShader" type="x-shader/x-vertex">
     uniform vec3 lightpos;  // world coordinate
@@ -46,7 +47,8 @@ body {
     varying vec4 eyepos;
     
     void main() {
-        float intensity = dot (normalize (eyenormal), normalize (eyelightdir));         if (intensity > 0.8)
+        float intensity = dot (normalize (eyenormal), normalize (eyelightdir));         
+        if (intensity > 0.8)
         	intensity = 0.8;
         else if (intensity > 0.4)
          	intensity = 0.4;
@@ -61,102 +63,23 @@ body {
         gl_FragColor = vec4 (diffuse + vec3(0.2,0.3,0.8), 1.0);
     }
 </script>
+<script type='module'>
 
-<script>
-
+import * as THREE from "https://threejs.org/build/three.module.js";
+import { OrbitControls } from "https://threejs.org/examples/jsm/controls/OrbitControls.js";
+import { TeapotGeometry } from "https://threejs.org/examples/jsm/geometries/TeapotGeometry.js";
 javascript:(function(){var script=document.createElement('script');script.onload=function(){var stats=new Stats();document.body.appendChild(stats.dom);requestAnimationFrame(function loop(){stats.update();requestAnimationFrame(loop)});};script.src='https://mrdoob.github.io/stats.js/build/stats.min.js';document.head.appendChild(script);})()
 
-var scene, renderer, camera;
-var mesh, pointLight;
-var keyboard = new KeyboardState();
-var turn = true;
-var angle = 0;
+    
 
-var meshes = [] ;
-
+    
+import { init, animate } from './main-5-1.js';
 init();
 animate();
-
-function init() {
-    var width = window.innerWidth;
-    var height = window.innerHeight;
-
-    renderer = new THREE.WebGLRenderer({
-        antialias: true
-    });
-    renderer.setSize(width, height);
-    document.body.appendChild(renderer.domElement);
-    renderer.setClearColor(0x888888);
-
-    scene = new THREE.Scene();
-
-    camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 10000);
-    camera.position.y = 160;
-    camera.position.z = 400;
-
-    let controls = new THREE.OrbitControls(camera, renderer.domElement);
-
-    var gridXZ = new THREE.GridHelper(200, 20, 'red', 'white');
-    scene.add(gridXZ);
-
-    pointLight = new THREE.PointLight(0xffffff);
-    scene.add (pointLight);
-    scene.add (new THREE.PointLightHelper(pointLight, 5));
-
-	var ambientLight = new THREE.AmbientLight(0x111111);
-    scene.add(ambientLight);
-
- 
-    let meshMaterial = new THREE.ShaderMaterial({
-        uniforms: {
-        lightpos: {type: 'v3', value: new THREE.Vector3()}
-        },
-        vertexShader: document.getElementById('myVertexShader').textContent,
-        fragmentShader: document.getElementById('myFragmentShader').textContent
-    });
-
     
-	var offsetX = 20;
-	var offsetZ = 20;
-    //var geometry = new THREE.TorusKnotGeometry(20, 5, 100, 16);
-    for(let i=0 ;i<100;i++){
-		var geometry = new THREE.TeapotGeometry (5);
-		mesh = new THREE.Mesh(geometry, meshMaterial);
-		meshes.push(mesh);
-		scene.add(mesh);
-		meshes[i].position.y += 5;
-	}
 
-	for(let i = 0 ; i < 100; i++){
-		meshes[i].position.x += -90+(i%10)*offsetX;
-	}
-
-	for(let i=0 ;i < 100;i++){
-		meshes[i].position.z += -90+Math.floor(i/10)*offsetZ;
-	}
-
-}
-
-function animate() {
-    keyboard.update();
-    
-    if (keyboard.down("Z")) turn = !turn;    
-    if (turn) angle += 0.01;
-    
-    pointLight.position.set(50 * Math.cos(angle), 80, 50 * Math.sin(angle));    
-    for(let i=0 ;i<100;i++){
-	
-		meshes[i].material.uniforms.lightpos.value.copy (pointLight.position);
-		meshes[i].rotation.y = 1.3*angle;
-	}
-    requestAnimationFrame(animate);
-    render();
-}
-
-function render() {
-    renderer.render(scene, camera);
-}
 
 </script>
 </body>
+
 </html>
